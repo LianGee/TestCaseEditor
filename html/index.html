@@ -1,0 +1,212 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>JSONEditor | Switch mode</title>
+
+  <!-- when using the mode "code", it's important to specify charset utf-8 -->
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+  <link href="../dist/jsoneditor.min.css" rel="stylesheet" type="text/css">
+  <script src="../dist/jsoneditor.js"></script>
+
+  <!-- for load and save Json file -->
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="https://bgrins.github.io/filereader.js/filereader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js"></script>
+
+  <style type="text/css" >
+    body {
+      font: 10.5pt arial;
+      color: #4d4d4d;
+      line-height: 150%;
+      width: 1000px;
+      margin:0 auto
+    }
+
+    code {
+      background-color: #f5f5f5;
+    }
+
+    #jsoneditor {
+      width: 500px;
+      height: 600px;
+    }
+
+    #jsonViewer{
+      width: 500px;
+      height: 600px; 
+    }
+
+  </style>
+
+
+</head>
+<body>
+<table>
+  <tr>
+    <td >
+      <div id="jsoneditor"></div>
+    </td>
+    
+    <td >
+      <div id="jsonViewer"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <button id="getJSON">Get JSON</button>
+      <input type="file" id="loadDocument" value="Load"/>
+      <input type="button" id="saveDocument" value="Save" />
+    </td>
+  </tr>
+
+</table>
+<script>
+  var container1 = document.getElementById('jsoneditor');
+  var container2 = document.getElementById('jsonViewer');
+
+  var schema = {
+    "title": "Example Schema",
+    "type": "object",
+    "properties": {
+      "firstName": {
+        "type": "string"
+      },
+      "lastName": {
+        "type": "string"
+      },
+      "gender": {
+        "enum": ["male", "female"]
+      },
+      "filePath": {
+        "enum": ["bobi", "hankxu", "yanma"]
+      },
+      "age": {
+        "description": "Age in years",
+        "type": "integer",
+        "minimum": 0
+      },
+      "TestOutput":{
+        "order_url":{
+
+        },
+        "response":{
+
+        },
+      },
+    },
+    "required": ["firstName", "lastName"]
+  };
+
+  var options2 = {
+    mode:"view",
+    modes: ['code', 'view'], // allowed modes
+    
+    
+  };
+
+  
+  var options1 = {
+    mode: 'tree',
+    modes: ['code', 'form', 'text', 'tree', 'view'], // allowed modes
+    onError: function (err) {
+      alert(err.toString());
+    },
+    onModeChange: function (newMode, oldMode) {
+      console.log('Mode switched from', oldMode, 'to', newMode);
+    },
+    onChange: function() {
+      if(editor != null){
+        var jsonString = JSON.stringify(editor.get(), null, 2)
+        viewer.setText(jsonString);
+        viewer.expandAll();
+      }
+    },
+    schema: schema
+
+  };
+
+  var json = {
+    firstName: 'John',
+    lastName: 'hahahahahahahahahhahaha',
+    filePath:'c://json.json',
+    gender: null,
+    age: 28,
+    TestOutput:{
+      "order_url":null,
+      "response":null
+    }
+  };
+
+
+  var editor = new JSONEditor(container1, options1, json);
+  var viewer = new JSONEditor(container2, options2, json);
+
+  editor.setName("TestCases");
+  viewer.setName("TestCases");
+  editor.expandAll();
+
+  document.getElementById('getJSON').onclick = function(){
+    var json = editor.get();
+    alert(JSON.stringify(json, null, 2)); 
+    viewer.set(json);
+  };
+
+  //set date format
+  Date.prototype.Format = function (fmt) { //author: meizz 
+      var o = {
+          "M+": this.getMonth() + 1, //月份 
+          "d+": this.getDate(), //日 
+          "h+": this.getHours(), //小时 
+          "m+": this.getMinutes(), //分 
+          "s+": this.getSeconds(), //秒 
+          "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+          "S": this.getMilliseconds() //毫秒 
+      };
+      if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+      for (var k in o)
+      if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+      return fmt;
+  }
+
+
+//load json file
+  FileReaderJS.setupInput(document.getElementById('loadDocument'), {
+    readAsDefault: 'Text',
+    on: {
+      load: function (event, file) {
+        editor.setText(event.target.result);
+      }
+    }
+  });
+
+
+  //save json file
+  document.getElementById('saveDocument').onclick = function () {
+    // Save Dialog
+    //fname = window.prompt("Save as...");
+    var vjson = editor.get()
+    //must be stringify, otherwise backend will get a urlencode string
+    vjson = JSON.stringify(vjson);
+    console.log(vjson)
+    var startTime = new Date().Format("yyyyMMddhhmmss");
+    var fname = vjson.firstName + startTime + '.json'; 
+    alert(fname);
+    var blob = new Blob([editor.getText()], {type: 'application/json;charset=utf-8'});
+    //saveAs(blob, fname);
+    //send data to back end
+    $.post("http://localhost:8888",
+       vjson,
+     function(data,status){
+        alert("Data: " + data + "\nStatus: " + status);
+        console.log(data);
+        if (data.group == 8) {
+            alert("group is 8");
+        };
+      }, 'json'
+    );
+  };
+</script>
+
+</body>
+</html>

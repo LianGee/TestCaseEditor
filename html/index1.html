@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript" language="javascript">
+    $(document).ready(function(){ 
+    	
+        $.post("http://localhost:8888",
+            {
+                name:"Donald Duck",
+                city:"Duckburg"
+            },
+            function(data,status){
+                alert("Data: " + data + "\nStatus: " + status);
+                console.log(data);
+                if (data.group == 8) {
+                    alert("group is 8");
+                };
+            }
+        );
+});
+
+
+</script>
+</head>
+<body>
+<p id="data">1231</p>
+</body>
+</html>
