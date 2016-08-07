@@ -126,17 +126,21 @@
 
   };
 
-  var json = {
-    firstName: 'John',
-    lastName: 'hahahahahahahahahhahaha',
-    filePath:'c://json.json',
-    gender: null,
-    age: 28,
-    TestOutput:{
+var json = {
+  JobID: 'John',
+  Priority: 8,
+  Description:'c://json.json',
+  TestOutput: {
       "order_url":null,
-      "response":null
-    }
-  };
+      "response":null,
+      "response1":null,
+      "response2":null,
+      "response3":null,
+      "response4":[1,2,3,1123,123123],
+    },
+  ExpectOutput: 28,
+  status:'wait',
+};
 
 
   var editor = new JSONEditor(container1, options1, json);
@@ -202,11 +206,12 @@
         console.log(data);
         if (data.group == 8) {
             alert("group is 8");
-        };
+            location.href = "TestReport.html";
+            console.log('redict');
+        }
       }, 'json'
     );
   };
 </script>
-
 </body>
 </html>
