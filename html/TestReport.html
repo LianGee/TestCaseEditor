@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>jQuery 表格自动增加</title>
+
+<!-- Javascript goes in the document HEAD -->
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<link href="../dist/jsoneditor.min.css" rel="stylesheet" type="text/css">
+<script src="../dist/jsoneditor.js"></script>
+<!-- CSS goes in the document HEAD or added to your external stylesheet -->
+
+  <style type="text/css" >
+    body {
+      font: 10.5pt arial;
+      color: #4d4d4d;
+      line-height: 150%;
+      width: 1000px;
+      margin:0 auto
+    }
+
+    code {
+      background-color: #f5f5f5;
+    }
+
+    #jsoneditor {
+      width: 500px;
+      height: 600px;
+    }
+
+</style>
+</head>
+<body>
+<!-- Table goes in the document BODY -->
+<center>
+	<table border="1"  bordercolor="#00CCCC" class="altrowstable" id="alternatecolor">
+		<tr>
+			<th width=50, height = auto>JobID</th>
+			<th width=20, height = auto>Priority</th>
+			<th width=20, height = auto>GroupID</th>
+			<th width=200, height = auto>Description</th>
+			<th width=200, height = auto>TestOutput</th>
+			<th width=200, height = auto>ExpectOutput</th>
+			<th width=50, height = auto>status</th>
+		</tr>
+	</table>
+	</div>
+	<br/>
+			<button id = 'bnt' >add line</button>	
+</center>
+<!--  The table code can be found here: http://www.textfixer/tutorials/css-tables.php#css-table03 -->
+ </body>
+
+
+
+<script type="text/javascript">
+
+var data = {
+	JobID: 'John',
+	Priority: 8,
+	Description:'c://json.json',
+	TestOutput: {
+      "order_url":null,
+      "response":null,
+      "response1":null,
+      "response2":null,
+      "response3":null,
+      "response4":[1,2,3,1123,123123],
+    },
+	ExpectOutput: 28,
+	status:'wait',
+};
+var tableItem = new Array('JobID','Priority','GroupID','Description','TestOutput','ExpectOutput','status');
+document.getElementById('bnt').onclick = function(){
+	var table = document.getElementById("alternatecolor");
+	var rows = table.rows.length;
+	var row = table.insertRow(rows);
+	var options = {
+		mode:"view"
+	};
+	for(var i = 0; i < 7; i++){
+		var cell = row.insertCell(i);
+		var startTime = new Date().getTime()
+		if(i == 4 ){
+			cell.innerHTML = "<div id=" + "jsoneViewer" +startTime + i + "></div>";
+			var container1 = document.getElementById('jsoneViewer' + startTime + i);
+			var viewer1 = new JSONEditor(container1, options);
+			viewer1.set({TestOutput:data['TestOutput']});
+			//viewer1.expandAll();
+		}else if(i == 5){
+			cell.innerHTML = "<div id=" + "jsoneViewer" + startTime + i + "></div>";
+			var container2 = document.getElementById('jsoneViewer' + startTime + i);
+			var viewer2 = new JSONEditor(container2, options);
+			viewer2.set({ExpectOutput:data['ExpectOutput']});
+			//viewer2.expandAll();
+		}else
+			cell.innerHTML = "<div>" + data[tableItem[i]] + "</div>";
+	}
+}
+function addline(data){
+	var table = document.getElementById("alternatecolor");
+	var rows = table.rows.length;
+	var row = table.insertRow(rows);
+	var options = {
+		mode:"view"
+	};
+	for(var i = 0; i < 7; i++){
+		var cell = row.insertCell(i);
+		var startTime = new Date().getTime()
+		if(i == 4 ){
+			cell.innerHTML = "<div id=" + "jsoneViewer" +startTime + i + "></div>";
+			var container1 = document.getElementById('jsoneViewer' + startTime + i);
+			var viewer1 = new JSONEditor(container1, options);
+			viewer1.set({TestOutput:data['TestOutput']});
+			//viewer1.expandAll();
+		}else if(i == 5){
+			cell.innerHTML = "<div id=" + "jsoneViewer" + startTime + i + "></div>";
+			var container2 = document.getElementById('jsoneViewer' + startTime + i);
+			var viewer2 = new JSONEditor(container2, options);
+			viewer2.set({ExpectOutput:data['ExpectOutput']});
+			//viewer2.expandAll();
+		}else
+			cell.innerHTML = "<div>" + data[tableItem[i]] + "</div>";
+	}
+}
+$(function(){
+	var data = {
+	    Priority:0 
+	};
+	vdata = JSON.stringify(data);
+	function addTask(){
+		$.post("http://localhost:8888",
+            vdata,
+            function(data,status){//data is the response
+                alert("Data: " + data + "\nStatus: " + status);
+                console.log(data);
+                if (data.group == 8) {
+                    alert("group is 8");
+                };
+                addline(data);
+            },'json'
+        );
+        
+	}
+	setInterval(addTask, 10000);
+});
+</script>
+
+</html>
